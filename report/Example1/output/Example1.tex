@@ -8,66 +8,66 @@
 \usepackage{hyperref}%
 \usepackage{lipsum}%
 \usepackage{microtype}%
+\usepackage{graphicx}%
 \usepackage{nicefrac}%
 \usepackage{url}%
 \usepackage{bookmark}%
 \usepackage{tabularx}%
 \usepackage{svg}%
+\usepackage{longtable}%
+\usepackage{ltablex}%
 %
 \title{Report Example}%
-\author{ME!}%
-\date{25/09/2019}%
+\author{Insert Author Name here}%
+\date{01/09/2019}%
 %
 \begin{document}%
 \normalsize%
 \maketitle%
 \input{../sections/Introduction}%
-\newline%
-\linebreak%
-\input{../sections/Logistic_Regression}%
-\newline%
-\linebreak%
 \input{../sections/Data}%
-\newline%
-\linebreak%
-\input{../sections/Results}%
-\newline%
-\linebreak%
+\input{../sections/Linear_Regression}%
 \input{../sections/Conclusion}%
-\newline%
-\linebreak%
-
-
-\begin{figure}[!ht]%
-\centering%
-\includegraphics[scale=0.6]{../figures/Figure1.png}%
-\linebreak%
-\caption{This is a plot of the linear reg output.}%
-\end{figure}
-
-%
-\newline%
-\linebreak%
-
-
-\begin{figure}[!ht]%
-\centering%
-\includegraphics[width=0.5\textwidth]{../figures/Figure2.png}%
-\linebreak%
-\caption{This image was saved directly to the current folder.}%
-\end{figure}
-
-%
-\newline%
-\linebreak%
-\input{../tables/Table2.tex}%
-\newline%
-\linebreak%
-\input{../tables/Table1.tex}%
-\newline%
-\linebreak%
-\input{../tables/Table3.tex}%
-\newline%
-\linebreak%
 \clearpage%
+\section{Appendix {-} Mapping Tables}%
+\label{sec:Appendix {-} Mapping Tables}%
+
+%
+\subsection{Age Filter.csv}%
+\label{subsec:Age Filter.csv}%
+
+%
+\begin{tabular}{l l l}%
+\hline%
+Lower&Upper&Category\\%
+\hline%
+1&11&1{-}11\\%
+12&17&12{-}17\\%
+18&34&18{-}34\\%
+35&49&35{-}49\\%
+50&10000&50+\\%
+\hline%
+\end{tabular}%
+\linebreak%
+\subsection{Race Filter.csv}%
+\label{subsec:Race Filter.csv}%
+
+%
+\begin{tabularx}{0.9\textwidth}{l X[l]}%
+\hline%
+Original&Category\\%
+\hline%
+\endhead%
+\hline%
+\multicolumn{2}{r}{Continued on Next Page}\\%
+\endfoot%
+\hline%
+\multicolumn{2}{r}{Not Continued on Next Page}\\%
+\endlastfoot%
+AA&{[}'Asian', 'asian', 'Indian', 'Korean', 'Chinese', 'Asian american', 'Vietnamese', 'asian indian', 'american indian', 'east indian', 'indian', 'middle eastern american', 'american indican', 'asian'{]}\\%
+MR&{[}'Multiracial:Other Combination', 'MultiRacial', 'Biracial', 'Multiracial:Black{-}African American White', 'Other Multi{-}Race', 'Multi{-}Race', 'Multiracial:Asian/Black{-}African American', 'Multiracial:Asian/White', 'Multi Raci', 'More Than One Race', 'Asian and White', 'biracial', 'multiracial:Other Combination', 'Multiracial', 'Mixed', 'Biracial{-}White/Native American', 'MultiRacia', 'White/Black', 'multiracial', 'biracial', 'multiracial:asian/black{-}african american', 'multiracial', 'multiracial:asian/white', 'multiracial:other combination', 'mixed', 'multi raci', 'multiracial:black{-}african american white', 'multi{-}race'{]}\\%
+NHPI&{[}'PACIFIC ISLANDER', 'NativeHawaiianPacificIslander', 'Hawaiian / Pacific Islander', 'Native Hawaiian/Other Pacific Islander', 'Native Hawaiian or Other Pacific Islander', 'Hawaiian or other Pacific Islander', 'Hawaiian/P', 'Hawaiian/Pacific Islander', 'Native Hawaiian/Pacific Is', 'Pacific Islander', 'hawaiian / Pacific Islander', 'Native Hawaiian or Other Pacific Is', 'pacific islander', 'nativehawaiianpacificislander', 'native hawaiian/other pacific islander', 'hawaiian/p', 'hawaiian / pacific islander', 'native hawaiian/pacific is'{]}\\%
+\hline%
+\end{tabularx}%
+\linebreak%
 \end{document}

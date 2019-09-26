@@ -228,49 +228,50 @@ class Report():
 
         self.addText2Doc(r'\clearpage') # page break
         for apdx in os.listdir(appenPath): 
-            mappingTable = pd.read_csv(os.path.join(appenPath, apdx), header=None)
-            colNum = len(mappingTable.columns)
+            if not apdx.startswith('.'):
+                mappingTable = pd.read_csv(os.path.join(appenPath, apdx), header=None)
+                colNum = len(mappingTable.columns)
 
-            if colNum == 2:
-                hdr_format = 'l X[l]'
-                col_names = ['Original', 'Category']
-                mappingTable.columns = col_names
-                mappingTable = mappingTable.groupby('Category')['Original'].apply(list).reset_index()
-                tbl_type = LongTabularx(hdr_format, width_argument=NoEscape(r'0.9\textwidth'))
+                if colNum == 2:
+                    hdr_format = 'l X[l]'
+                    col_names = ['Original', 'Category']
+                    mappingTable.columns = col_names
+                    mappingTable = mappingTable.groupby('Category')['Original'].apply(list).reset_index()
+                    tbl_type = LongTabularx(hdr_format, width_argument=NoEscape(r'0.9\textwidth'))
 
-            elif colNum == 3:
-                hdr_format = 'l l l'
-                col_names = ['Lower','Upper','Category']
-                tbl_type = Tabular(hdr_format)
+                elif colNum == 3:
+                    hdr_format = 'l l l'
+                    col_names = ['Lower','Upper','Category']
+                    tbl_type = Tabular(hdr_format)
 
-            self.doc.append(bold(NoEscape(r'{} Mapping Table\\'.format(apdx.replace('_', ' ')))))
+                self.doc.append(bold(NoEscape(r'{} Mapping Table\\'.format(apdx.replace('_', ' ')))))
 
-            with self.doc.create(tbl_type) as appendix:
-                appendix.add_hline()
-                appendix.add_row(col_names) 
-                appendix.add_hline()
-
-                if colNum == 2: 
-                    appendix.end_table_header()
+                with self.doc.create(tbl_type) as appendix:
                     appendix.add_hline()
-                    appendix.add_row((MultiColumn(colNum, align='r',
+                    appendix.add_row(col_names) 
+                    appendix.add_hline()
+
+                    if colNum == 2: 
+                        appendix.end_table_header()
+                        appendix.add_hline()
+                        appendix.add_row((MultiColumn(colNum, align='r',
                                                     data='Continued on Next Page'),))
-                    appendix.end_table_footer()
-                    appendix.add_hline()
-                    appendix.add_row((MultiColumn(colNum, align='r',
+                        appendix.end_table_footer()
+                        appendix.add_hline()
+                        appendix.add_row((MultiColumn(colNum, align='r',
                                         data='Not Continued on Next Page'),))
-                    appendix.end_table_last_footer()
+                        appendix.end_table_last_footer()
 
-                # Iterate through each row in the csv. 
-                for i, rw in mappingTable.iterrows():
-                    row = [rw[j] for j in range(colNum)]
-                    appendix.add_row(row)
+                    # Iterate through each row in the csv. 
+                    for i, rw in mappingTable.iterrows():
+                        row = [rw[j] for j in range(colNum)]
+                        appendix.add_row(row)
 
-                appendix.add_hline()
+                    appendix.add_hline()
 
-            self.doc.append(LineBreak())
-            self.doc.append(LineBreak())
-            self.doc.append(LineBreak())
+                self.doc.append(LineBreak())
+                self.doc.append(LineBreak())
+                self.doc.append(LineBreak())
         
         return
     
@@ -296,17 +297,19 @@ class Report():
         figPath = os.path.join(self.fpath, 'figures')
         self.doc.create(Section('Figures'))
         for fig in os.listdir(figPath):
-            self.addFig2Doc(fig)
-            self.doc.append(NewLine())
-            self.doc.append(LineBreak())
+            if not fig.startswith('.'):
+                self.addFig2Doc(fig)
+                self.doc.append(NewLine())
+                self.doc.append(LineBreak())
             
         # For tables inside the folder, add tables
         tblPath = os.path.join(self.fpath, 'tables')
         self.doc.create(Section('Tables'))
         for tbl in os.listdir(tblPath):
-            self.addTbl2Doc(tbl)
-            self.doc.append(NewLine())
-            self.doc.append(LineBreak())
+            if not tbl.startswith('.'):
+                self.addTbl2Doc(tbl)
+                self.doc.append(NewLine())
+                self.doc.append(LineBreak())
 
         # For apx inside the folder, add apx
         self.addAppendix()
@@ -319,6 +322,10 @@ class Report():
                 self.doc.generate_pdf(os.path.join(self.outputPath, self.name), 
                                   clean_tex=False)
             except:
+<<<<<<< HEAD
                 print('Error!')
+=======
+                print('error!')
+>>>>>>> d6fff3dd198519c136451ed0116bef518ad35aad
 
         return 

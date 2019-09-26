@@ -315,7 +315,10 @@ class Report():
         if tex_only:
             self.doc.generate_tex(os.path.join(self.outputPath, self.name))
         else:
-            self.doc.generate_pdf(os.path.join(self.outputPath, self.name), 
+            try:
+                self.doc.generate_pdf(os.path.join(self.outputPath, self.name), 
                                   clean_tex=False)
+            except:
+                print('Error!')
 
         return 

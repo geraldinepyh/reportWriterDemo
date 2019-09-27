@@ -6,7 +6,7 @@ import shutil
 import jsonref
 
 import pylatex
-import subprocess # to download arxiv.sty from GH
+#import subprocess # to download arxiv.sty from GH
 from pylatex import Document, Section, Subsection, Tabular,  Tabularx, LongTabularx, MultiColumn, NoEscape, Figure, Package, Command, LineBreak, NewLine
 from pylatex.utils import bold
 
@@ -26,7 +26,9 @@ class Report():
         return 
     
     def makeDirs(self, dirPath):
-        # Helper function to make Directories
+        """Helper function to make Directories given a specified (dirPath)
+        If the sub-directories do not exist, they will be created as well. 
+        """
         if not os.path.exists(dirPath):
             os.makedirs(dirPath)
             print('Created', dirPath)
@@ -34,8 +36,12 @@ class Report():
             print(dirPath, 'already exists.')
         return
         
-    def initialize(self, fpath):
-        ## Initialize a report project
+    def initialize(self, fpath='../results'):
+        """Initialize a report project. 
+        
+        Keyword Arguments:
+            fpath {str} -- File path where the report project is to be generated. (default: {'../results'})
+        """
         self.makeDirs(fpath)
         subs = list(self.objects) + ['output'] 
         for sub in subs:
@@ -45,11 +51,10 @@ class Report():
         print(f'>> {self.name} report structure has been initialized.')
         return 
 
-    def addNewLine2Doc(self):
-        self.doc.append(NoEscape(r'\leavevmode'))
-        self.doc.append(NewLine())
-
     def resetDoc(self):
+        """Adds packages and preamble to the document
+        when it is to be regenerated. Clears previous entries.
+        """
         self.doc=Document()
         pkgs_to_add = [ 'booktabs','hyperref','lipsum','microtype', 'graphicx',\
                         'nicefrac','url','bookmark','tabularx', 'svg']
@@ -68,11 +73,19 @@ class Report():
     ########################### ADDING TABLES ########################
     
     def saveTable(self, name, data, path='../tables/', caption='', override=False):
-        '''
-        Given a pandas dataframe (data), save to (path) as a tex file with the same (name)
-            if it doesn't yet exist. (Option to override even if it exists.)
-            If (caption) is given, will be appended.
-        '''
+        """Given a pandas dataframe, save to a specified file path 
+            as a tex file with the same name, if it doesn't yet exist. 
+
+        Arguments:
+            name {str} -- Name of the table of which the tex file will be saved as. 
+            data {pandas dataframe or list of dataframes} -- table data that is to be saved. If a list of dataframes is provided as (data), 
+            they will be concatenated columnwise (inner join). Hence the tables in the same list must have matching indices. 
+        
+        Keyword Arguments:
+            path {str} -- File path location where the table is to be saved as a tex file. (default: {'../tables/'})
+            caption {str} -- Optional caption that will be appended to the next line after the table. (default: {''})
+            override {bool} -- Specify whether to override an existing tex file. (default: {False})
+        """
         inPath = os.path.join(self.fpath, 'tables', name+'.tex') # to write the tex file in
         outPath = os.path.join(path, name+'.tex') # to point to the tex file? ## Why do i need this
 
@@ -103,9 +116,11 @@ class Report():
         return
 
     def addTbl2Doc(self, tblpath):
-        '''
-        Add a table by name to the latex document if it exists in the folder.
-        '''
+        """Add a table by name to the latex document, if it exists in the folder.
+        
+        Arguments:
+            tblpath {str} -- file path where the tex file will be retrieved from
+        """
         tbl = os.path.basename(tblpath)
         outPath = os.path.join('../tables', tbl)
 
@@ -121,14 +136,29 @@ class Report():
     
     
     def saveFigure(self, name, fpath='', savePath='', caption='', option='', override=False):
-        '''
-        Given an existing image file (fpath), save to (savePath) 
-            if it doesn't exist yet. (Option to override even if it exists.)
-        If caption and option are given, will be added to the figures' configuration dictionary.
-        '''
+    """Given an existing image file (fpath), save to (savePath) 
+            as a png file with the same (name), if it doesn't yet exist. 
+            Optional to (override) even if it exists.
+
+        If (caption) and (option) are given, will be added to the 
+            figures' configuration dictionary. 
+            The (Option) is any extra tex formatting of the image. 
+    
+    Arguments:
+        name {str} -- Name of the figure that will be saved into the savePath 
+    
+    Keyword Arguments:
+        fpath {str} -- Location of the original file. Optional; if not provided, will just use files in the savePath (default: {''})
+        savePath {str} -- file path where the png will be copied to if fpath provided or override instruction given. (default: {''})
+        caption {str} -- Caption that will be added to the bottom of the figure. (default: {''})
+        option {str} -- Special tex configurations/formatting for the image. It must be a raw tex string, such as option='r'0.8\textheight'' or option='scale=0.5'. (default: {''})
+        override {bool} -- Specify whether to override a png file in savePath even if it exists. (default: {False})
+
+    Returns:
+        [type] -- [description]
+    """
         savePath = os.path.join(self.fpath, 'figures')
         outPng = os.path.join(savePath, name + '.png')
-        outTex = os.path.join(savePath, name + '.tex')
         
         if not os.path.exists(outPng) and fpath != '':
             print(f'Copying {name}.png to {savePath}.')
@@ -141,19 +171,26 @@ class Report():
         elif fpath == '' and not os.path.exists(outPng):
             print('No input path provided. Image not found.')
 
-        elif os.path.exists(outTex) and os.path.exists(outPng):
+        elif os.path.exists(outPng):
             print(f'{name} already exists in {savePath}. No override instruction was given.')
         
         # Add to dictionary. 
         self.figures[name+'.png'] = {
-            'name' : name,
-            'fpath' : fpath, 
-            'caption' : caption,
-            'option' : option
+            'name': name,
+            'fpath': fpath,
+            'caption': caption,
+            'option': option
         }
         return
     
     def addFig2Doc(self, figpath):
+        """Add a figure by name to the end of the latex document, 
+            if it exists in the folder, by referencing the configurations
+            of the figure as described in the self.figures dictionary.
+        
+        Arguments:
+            figpath {str} -- file path of the figure to be added to the document.
+        """ 
         fig = os.path.basename(figpath)
         outPath = os.path.join('../figures', fig)
         
@@ -182,14 +219,32 @@ class Report():
     
     ######################## ADDING STUFF ############################
     
+    def addNewLine2Doc(self):
+        """To add a new line to the document. If use NewLine() without
+        the \leavevmode command, pdflatex will throw a 'no line to break' error.
+        """
+        self.doc.append(NoEscape(r'\leavevmode'))
+        self.doc.append(NewLine())
+        return
     
     def addText2Doc(self, text):
-        '''Add a raw string of text to the Document.'''
+        """Add a raw string of text to the Document.
+        
+        Arguments:
+            text {str} -- Text to be added to the document. 
+            Include an 'r' in front of the string if there are 
+            special characters you want to include as tex.
+            e.g. use r'\textbf'
+        """
         self.doc.append(NoEscape(text))
         return 
 
     def sectionLevel(self, level, title):
-        """ To identify and return different section-types based on a given (level)
+        """ To identify and return different section-types 
+            based on a given (level). 
+        
+        Returns:
+            pylatex Container -- Section/Subsection/Subsubsection container.
         """
         if level == 1:
             return Section(title)
@@ -199,10 +254,19 @@ class Report():
             return Subsubsection(title)
         else:
             print('Error: invalid section level given.')
-        return
     
     def addSection(self, name, level=1, override=False):
+    """Adds sections to the document in the order that they
+        exist in the self.sections dictionary.
 
+    Arguments:
+        name {str} -- Name/Title of the section which will be printed.
+        Avoid using special characters like '_'. 
+
+    Keyword Arguments:
+        level {int} -- The level of the seciton to be created. For example, level=2 gives a subsection. (default: {1})
+        override {bool} -- Whether to override existing Figures on subsequent runs. (default: {False})
+    """
         sectPath = os.path.join(self.fpath, 'sections',  name.replace(' ','_')+'.tex')
         if not os.path.exists(sectPath) or override==True:
             # Create a section
@@ -218,6 +282,7 @@ class Report():
             print(f'{sectPath} already exists. Did not override.')
         
         if not name in self.sections:
+            # avoid tex errors with any _ in the section name
             self.sections[name.replace(' ', '_')] = {
                 "fpath" : sectPath,
                 "level" : level
@@ -226,8 +291,10 @@ class Report():
     
     def addAppendix(self, apdx):
         """Adds mapping tables as an appendix to the report.
-        For each csv file in the appendix folder, it will create either a 2/3-column
-            table specifying the mapping values. 
+        For the specified (apdx) csv file in the appendix folder, 
+            it will create a table with either 2/3-columns
+            specifying the mapping values. 
+        Note that this might not work well with extremely long mapping tables.
         """
         mappingTable = pd.read_csv(apdx, header=None)
         colNum = len(mappingTable.columns)
@@ -278,15 +345,29 @@ class Report():
     ########################## MAKING THE REPORT ##########################
         
         
-    def makeReport(self, reportName = 'report',sectionOnly=False, texOnly=False):
-        '''Automated generation of report structure'''
+    def makeReport(self, sectionOnly=False, texOnly=False):
+        """Automated generation of the report. 
+
+        Keyword Arguments:
+            sectionOnly {bool} -- Specify whether the report should only generate
+            the sections and appendix, or if the figures and tables tex should be
+            regenerated as well. 
+            
+            Generally, use sectionOnly=True if you have moved the figures/tables tex 
+            into your sections. Otherwise, anything in the figures/tables folders 
+            will be regenerated at the end of your main tex document,
+            even if you have already moved a copy out into the sections. 
+            (default: {False})
+            texOnly {bool} -- Specify whether you would like a PDF document to be generated,
+            or if you only want to generate as tex for previewing. (default: {False})
+        """
         # Clear document 
         self.resetDoc()
 
         # For section inside the folder, add sections
         sectPath = os.path.join(self.fpath, 'sections')
         # for sect in os.listdir(sectPath): 
-        for sect in self.sections:
+        for sect in self.sections: 
             sectFile = os.path.join('../sections', sect)
             self.addText2Doc(r'\input{' + sectFile + r'}')
 

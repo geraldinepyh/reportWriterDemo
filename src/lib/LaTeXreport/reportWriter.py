@@ -114,9 +114,9 @@ class Report():
     ########################## ADDING FIGURES ###########################
     
     
-    def saveFigure(self, name, fpath='', savePath='', caption='', option='', override=False):
+    def saveFigure(self, name, fpath='', caption='', option='', override=False):
         '''
-        Given an existing image file (fpath), save to (savePath) 
+        Given an existing image file (fpath), save to Figures folder
             if it doesn't exist yet. (Option to override even if it exists.)
         If caption and option are given, will be added to the figures' configuration dictionary.
         '''

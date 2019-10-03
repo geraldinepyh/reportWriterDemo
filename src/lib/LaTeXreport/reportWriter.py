@@ -6,7 +6,6 @@ import shutil
 import jsonref
 
 import pylatex
-#import subprocess # to download arxiv.sty from GH
 from pylatex import Document, Section, Subsection, Tabular,  Tabularx, LongTabularx, MultiColumn, NoEscape, Figure, Package, Command, LineBreak, NewLine
 from pylatex.utils import bold
 
@@ -135,8 +134,8 @@ class Report():
     ########################## ADDING FIGURES ###########################
     
     
-    def saveFigure(self, name, fpath='', savePath='', caption='', option='', override=False):
-    """Given an existing image file (fpath), save to (savePath) 
+    def saveFigure(self, name, fpath='', caption='', option='', override=False):
+    """Given an existing image file (fpath), save to Figures folder 
             as a png file with the same (name), if it doesn't yet exist. 
             Optional to (override) even if it exists.
 
@@ -215,8 +214,7 @@ class Report():
                     fig_.add_image(outPath)
             print(f'Added {fig} to the tex doc obj')
         return
-
-    
+  
     ######################## ADDING STUFF ############################
     
     def addNewLine2Doc(self):

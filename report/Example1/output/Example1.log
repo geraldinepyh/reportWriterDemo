@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2019.7.12)  25 SEP 2019 16:07
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017/Debian) (preloaded format=pdflatex 2019.7.12)  4 OCT 2019 14:50
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -799,7 +799,7 @@ Package xcolor Info: Model `wave' substituted by `hsb' on input line 1371.
 Package: transparent 2016/05/16 v1.1 Transparency via pdfTeX's color stack (HO)
 
 )
-No file Example1.aux.
+(./Example1.aux)
 \openout1 = `Example1.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 21.
@@ -816,7 +816,7 @@ LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 21.
 LaTeX Font Info:    ... okay on input line 21.
 LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 21.
 LaTeX Font Info:    Try loading font information for TS1+cmr on input line 21.
-(/usr/share/texlive/texmf-dist/tex/latex/base/ts1cmr.fd
+ (/usr/share/texlive/texmf-dist/tex/latex/base/ts1cmr.fd
 File: ts1cmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    ... okay on input line 21.
@@ -918,114 +918,6 @@ LaTeX Font Info:    External font `lmex10' loaded for size
 LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <6> on input line 24.
  (../sections/Introduction.tex)
-(../sections/Logistic_Regression.tex
-Underfull \hbox (badness 10000) in paragraph at lines 3--1
-\T1/lmr/m/n/10 (+20) Insert your text here.
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 3--1
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 3--1
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 3--1
-
- []
-
-) (../sections/Data.tex
-Underfull \hbox (badness 10000) in paragraph at lines 3--1
-\T1/lmr/m/n/10 (+20) Insert your text here.
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 3--1
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 3--1
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 3--1
-
- []
-
-) (../sections/Results.tex
-Underfull \hbox (badness 10000) in paragraph at lines 3--1
-\T1/lmr/m/n/10 (+20) Insert your text here.
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 3--1
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 3--1
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 3--1
-
- []
-
-) (../sections/Conclusion.tex
-Underfull \hbox (badness 10000) in paragraph at lines 3--1
-\T1/lmr/m/n/10 (+20) Insert your text here.
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 3--1
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 3--1
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 3--1
-
- []
-
-)
-Underfull \hbox (badness 10000) in paragraph at lines 3--39
-\T1/lmr/m/n/10 (+20) Insert your text here.
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 3--39
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 3--39
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 3--39
-
- []
-
-<../figures/Figure1.png, id=4, 433.62pt x 289.08pt>
-File: ../figures/Figure1.png Graphic file (type png)
-<use ../figures/Figure1.png>
-Package pdftex.def Info: ../figures/Figure1.png  used on input line 43.
-(pdftex.def)             Requested size: 260.17401pt x 173.44933pt.
-[1
-
-{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
 
 ! LaTeX Error: There's no line here to end.
 
@@ -1033,7 +925,20 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.49 \newline
+l.24 \input{../sections/Introduction}
+                                     %
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+
+! LaTeX Error: There's no line here to end.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.25 \newline
              %
 Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
@@ -1046,16 +951,169 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.51 
+l.27 \input
+           {../sections/Data}%
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+(../sections/Data.tex)
+
+! LaTeX Error: There's no line here to end.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.27 \input{../sections/Data}
+                             %
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+
+! LaTeX Error: There's no line here to end.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.28 \newline
+             %
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+
+! LaTeX Error: There's no line here to end.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.30 \input
+           {../sections/Linear_Regression}%
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+(../sections/Linear_Regression.tex [1
+
+{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}])
+
+! LaTeX Error: There's no line here to end.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.30 \input{../sections/Linear_Regression}
+                                          %
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+
+! LaTeX Error: There's no line here to end.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.31 \newline
+             %
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+
+! LaTeX Error: There's no line here to end.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.33 \input
+           {../sections/Conclusion}%
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+(../sections/Conclusion.tex)
+
+! LaTeX Error: There's no line here to end.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.33 \input{../sections/Conclusion}
+                                   %
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+
+! LaTeX Error: There's no line here to end.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.34 \newline
+             %
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+
+! LaTeX Error: There's no line here to end.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.36 
      
 Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
 or  <return>  to continue without it.
 
-<../figures/Figure2.png, id=20, 433.62pt x 289.08pt>
+<../figures/Figure1.png, id=16, 462.528pt x 346.896pt>
+File: ../figures/Figure1.png Graphic file (type png)
+<use ../figures/Figure1.png>
+Package pdftex.def Info: ../figures/Figure1.png  used on input line 40.
+(pdftex.def)             Requested size: 277.51894pt x 208.13919pt.
+
+! LaTeX Error: There's no line here to end.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.46 \newline
+             %
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+
+! LaTeX Error: There's no line here to end.
+
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.48 
+     
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
+
+<../figures/Figure2.png, id=18, 433.62pt x 289.08pt>
 File: ../figures/Figure2.png Graphic file (type png)
 <use ../figures/Figure2.png>
-Package pdftex.def Info: ../figures/Figure2.png  used on input line 55.
+Package pdftex.def Info: ../figures/Figure2.png  used on input line 52.
 (pdftex.def)             Requested size: 172.5pt x 114.99918pt.
 
 ! LaTeX Error: There's no line here to end.
@@ -1064,7 +1122,7 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.61 \newline
+l.58 \newline
              %
 Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
@@ -1077,7 +1135,7 @@ See the LaTeX manual or LaTeX Companion for explanation.
 Type  H <return>  for immediate help.
  ...                                              
                                                   
-l.63 \input
+l.60 \input
            {../tables/Table2.tex}%
 Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
@@ -1130,63 +1188,56 @@ You're in trouble here.  Try typing  <return>  to proceed.
 If that doesn't work, type  X <return>  to quit.
 
 )
-Underfull \hbox (badness 10000) in paragraph at lines 1--72
+Underfull \hbox (badness 10000) in paragraph at lines 1--69
 
  []
 
 
-Overfull \hbox (88.94444pt too wide) in paragraph at lines 1--72
+Overfull \hbox (88.94444pt too wide) in paragraph at lines 1--69
 [] 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1--72
+Underfull \hbox (badness 10000) in paragraph at lines 1--69
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1--72
+Underfull \hbox (badness 10000) in paragraph at lines 1--69
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 1--72
+Underfull \hbox (badness 10000) in paragraph at lines 1--69
 
  []
 
-[2 <../figures/Figure1.png> <../figures/Figure2.png>] [3]
-
-Package lastpage Warning: Rerun to get the references right on input line 73.
-
+[2] [3 <../figures/Figure1.png> <../figures/Figure2.png>] [4]
 
 AED: lastpage setting LastPage
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 73.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 73.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 70.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 70.
 (./Example1.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 73.
-Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 73.
-
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 73.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 70.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 70.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 70.
  ) 
 Here is how much of TeX's memory you used:
- 9539 strings out of 494923
- 146940 string characters out of 6180742
- 380340 words of memory out of 5000000
- 12658 multiletter control sequences out of 15000+600000
- 45063 words of font info for 50 fonts, out of 8000000 for 9000
+ 9545 strings out of 494923
+ 146921 string characters out of 6180742
+ 382542 words of memory out of 5000000
+ 12653 multiletter control sequences out of 15000+600000
+ 45561 words of font info for 56 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 37i,7n,42p,246b,355s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 37i,7n,42p,246b,334s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/usr/share/texmf/fonts/enc/dvips/lm/lm-ec.enc}</usr/share/texmf/fonts/type1/
 public/lm/lmbx12.pfb></usr/share/texmf/fonts/type1/public/lm/lmr10.pfb></usr/sh
 are/texmf/fonts/type1/public/lm/lmr12.pfb></usr/share/texmf/fonts/type1/public/
 lm/lmr17.pfb>
-Output written on Example1.pdf (3 pages, 111409 bytes).
+Output written on Example1.pdf (4 pages, 122505 bytes).
 PDF statistics:
  68 PDF objects out of 1000 (max. 8388607)
- 54 compressed objects within 1 object stream
+ 53 compressed objects within 1 object stream
  11 named destinations out of 1000 (max. 500000)
- 13875 words of extra memory for PDF output out of 14400 (max. 10000000)
+ 13867 words of extra memory for PDF output out of 14400 (max. 10000000)
 

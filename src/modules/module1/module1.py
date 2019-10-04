@@ -1,12 +1,13 @@
 from logs import logDecorator as lD 
 import jsonref, pprint
 from lib.databaseIO import pgIO
+from lib.LaTeXreport import reportWriter as rw
 
 import os
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.linear_model import LinearRegression
+from sklearn import datasets, linear_model
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, r2_score
 import pickle
@@ -17,9 +18,7 @@ projConfig = jsonref.load(open('../config/modules/module1.json'))
 
 @lD.log(logBase + '.getData')
 def getData(logger):
-    '''get data from mindlinc
-    
-    This function gets some data from the mindlinc database.
+    '''get data and generate some tables and plots. 
     
     Parameters
     ----------
@@ -31,50 +30,108 @@ def getData(logger):
     cohortWindow = [0, 1000]
     daysWindow = [0, 365]
 
-    # get CGI data - target
-    cgi_query = '''
-                SELECT distinct on (severity, {0}.cgi.patientid, days) severity, {0}.cgi.patientid, days
-                from 
-                (
-                    select * from {0}.typepatient
-                        where age is not null 
-                        and patientid >= {1} and patientid <= {2}
-                        and days >= {3} and days <= {4} 
-                ) as temp1
-                inner join {0}.cgi
-                on {0}.cgi.typepatientid = temp1.typepatientid  
-                '''.format( dbVersion, cohortWindow[0], cohortWindow[1], daysWindow[0], daysWindow[1])
-    cgi_data = pgIO.getAllData(cgi_query, dbName=dbName)
-    cgi_df = pd.DataFrame(cgi_data, columns=['cgi', 'patientID', 'days'])
-    if not os.path.exists('../data/raw_data/cgi.pkl'): cgi_df.to_pickle('../data/raw_data/cgi.pkl')
+    diabetes = datasets.load_diabetes()
+    diabetes_df = pd.DataFrame(diabetes.data, columns=diabetes.feature_names)
+    descript = pd.DataFrame(diabetes.data, columns=diabetes.feature_names).describe()
+    with open('../data/raw_data/descriptive_table.pkl', 'wb') as f:
+        pickle.dump(descript, f)
 
-    # get meds data - Features
-    meds_query = '''
-                SELECT distinct on (medication, {0}.meds.patientid, days) medication, {0}.meds.patientid, days from 
-                (
-                    select * from {0}.typepatient
-                        where age is not null 
-                        and patientid >= {1} and patientid <= {2}
-                        and days >= {3} and days <= {4} 
-                ) as temp1
-                inner join {0}.meds
-                on {0}.meds.typepatientid = temp1.typepatientid    
-                '''.format( dbVersion, cohortWindow[0], cohortWindow[1], daysWindow[0], daysWindow[1])
-    meds_data = pgIO.getAllData(meds_query, dbName=dbName)
-    meds_df = pd.DataFrame(meds_data, columns=['meds', 'patientID', 'days'])
-    if not os.path.exists('../data/raw_data/meds.pkl'): meds_df.to_pickle('../data/raw_data/meds.pkl')
+    diabetes_X = diabetes.data[:, np.newaxis, 2] # using only 1 feature
+    diabetes_X_train = diabetes_X[:-20]
+    diabetes_X_test = diabetes_X[-20:]
+    diabetes_y_train = diabetes.target[:-20]
+    diabetes_y_test = diabetes.target[-20:]
 
-    cgiOut = cgi_df.drop('days', axis=1).groupby(['patientID'], sort=False, as_index=False)['cgi'].mean()
+    regr = linear_model.LinearRegression()
+    regr.fit(diabetes_X_train, diabetes_y_train)
+    diabetes_y_pred = regr.predict(diabetes_X_test)
 
-    medsOut = meds_df.drop('days', axis=1).groupby('patientID', sort=False, as_index=False).agg(lambda x: list(x.unique()))
-    medsOut = medsOut['meds'].str.join('|').str.get_dummies().join(medsOut[['patientID']])
+    # Plot outputs
+    plt.scatter(diabetes_X_test, diabetes_y_test,  color='black')
+    plt.plot(diabetes_X_test, diabetes_y_pred, color='blue', linewidth=3)
+    plt.savefig('../data/raw_data/fig1.png')
 
-    dataOut = pd.merge(medsOut, cgiOut, how='inner', on='patientID')
-    dataOut.set_index('patientID', inplace=True)
-    if not os.path.exists('../data/raw_data/combined.pkl'): dataOut.to_pickle('../data/raw_data/combined.pkl')
-    # print(dataOut.describe())
+    plt.clf()
+    plt.hist(diabetes_df.age)
+    plt.savefig('../data/raw_data/fig2.png')
 
-    return dataOut
+    print('Coefficients: \n', regr.coef_)
+    print("Mean squared error: %.2f"
+        % mean_squared_error(diabetes_y_test, diabetes_y_pred))
+    print('Variance score: %.2f' % r2_score(diabetes_y_test, diabetes_y_pred))
+
+    results = pd.DataFrame([('Coefficient(s)', regr.coef_),
+                        ('Mean Squared Error', mean_squared_error(diabetes_y_test, diabetes_y_pred)),
+                        ('Variance Score', r2_score(diabetes_y_test, diabetes_y_pred))
+                        ], columns=['Results','Values'])
+    results.Results = results.Results.astype('str')
+    results.Values  = results.Values.astype('int')
+    with open('../data/raw_data/results.pkl', 'wb') as f:
+        pickle.dump(results, f)
+
+    # Generate 3 separate dataframes as an example
+    df1 = descript.s1
+    df2 = descript.s3
+    df3 = descript.s5
+    df_to_concat = [df1,df2,df3]
+    for x, dfx in enumerate(df_to_concat):
+        with open(f'../data/raw_data/tbls{x}.pkl', 'wb') as f:
+            pickle.dump(dfx, f)
+
+    return [descript, results, [df1,df2,df3]]
+
+@lD.log(logBase + '.runExample')
+def runExample(logger, projName='Demo'):
+
+    examples = getData()
+
+    rep = rw.Report(projName) 
+    rep.title = "Report Example"
+    rep.author = "Insert Author Name here"
+    rep.date = '25/09/2019'
+    rep.initialize(rep.fpath)
+
+    ### Add figures ###
+    # 1. by copying from other filepath 
+    rep.saveFigure('Figure1', 
+                '../data/raw_data/fig1.png', # some other filepath
+                caption='This is a plot of the linear reg output.', 
+                option='scale=0.6', override=True)
+
+    # 2. by saving or moving directly to figures folder if it's already created
+    rep.saveFigure('Figure2', 
+                '../data/raw_data/fig2.png', # some other filepath
+                caption='This is a histogram of the patients\' age.',
+                option=r'width=0.5\textwidth')
+
+    ### Add tables ###
+    # 1. Add directly from pandas dataframe 
+    rep.saveTable('Table1', 
+                examples[0], 
+                caption='Descriptive table of diabetes data.', 
+                override=False)
+
+    rep.saveTable('Table2', 
+                examples[1], 
+                caption='Results of the Logisitic Regression', 
+                override=True)
+
+    rep.saveTable('Table3', 
+                examples[2], # [df1,df2,df3]
+                caption='Merged dataframes example.', 
+                override=True)
+
+    # 2. Add tex files directly to tables folder 
+    # (No need to run saveTable since it's already in TeX)
+
+    # Add sections
+    rep.addSection('Introduction')
+    rep.addSection('Data')
+    rep.addSection('Linear Regression', level=2)
+    rep.addSection('Conclusion')
+
+    rep.makeReport()
+    return 
 
 
 @lD.log(logBase + '.main')
@@ -91,22 +148,7 @@ def main(logger, resultsDict):
         The logger used for logging error information
     '''
 
-    df = getData()
-    x_train, x_test, y_train, y_test = train_test_split(df.iloc[:,:-1], df.iloc[:,-1], test_size=0.25, random_state=2019)
-    model = LinearRegression()
-
-    model.fit(x_train, y_train)
-    r_sq = model.score(x_test, y_test)
-    print(r_sq)
-    print(model.intercept_)
-    print(model.coef_)
-    print('-'*30)
-
-    y_pred = model.predict(x_test)
-    # plt.scatter(x_test, y_test, color='black')
-    plt.plot(x_test, y_pred, color='blue', linewidth=3)
-    # plt.show()
-    plt.savefig('../results/fig1.png')
+    runExample('Example1')
 
     return
 

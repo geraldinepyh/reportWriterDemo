@@ -965,6 +965,11 @@ Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
 or  <return>  to continue without it.
 
+<<<<<<< HEAD
+=======
+
+Underfull \hbox (badness 10000) in paragraph at lines 7--17
+>>>>>>> 4a65f07cbc2f6e915f176ff805d765c3ce5df633
 
 Underfull \hbox (badness 10000) in paragraph at lines 7--17
 

@@ -127,7 +127,7 @@ class Report():
             print(f'Error: {tblpath} does not exist. Please save first and try again.')
         else:
             self.doc.append(NoEscape(r'\input{' + outPath + r'}')) 
-            print(f'Added {tbl} to the tex doc obj.')
+            print(f'Added {tblpath} to the tex doc obj.')
         return
     
     
@@ -182,7 +182,7 @@ class Report():
         }
         return
     
-    def addFig2Doc(self, fig):
+    def addFig2Doc(self, figpath):
         """Add a figure by name to the end of the latex document, 
             if it exists in the folder, by referencing the configurations
             of the figure as described in the self.figures dictionary.
@@ -190,6 +190,7 @@ class Report():
         Arguments:
             figpath {str} -- file path of the figure to be added to the document.
         """ 
+        fig = os.path.basename(figpath)
         inPath = os.path.join(self.fpath, 'figures', fig)
         outPath = os.path.join('../figures', fig)
         
@@ -345,7 +346,7 @@ class Report():
     ########################## MAKING THE REPORT ##########################
         
         
-    def makeReport(self, sectionsOnly=False, tex_only=False):
+    def makeReport(self, sectionOnly=False, tex_only=False):
         """Automated generation of the report. 
 
         Keyword Arguments:

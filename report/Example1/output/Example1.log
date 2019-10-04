@@ -955,7 +955,7 @@ or  <return>  to continue without it.
 (../sections/Data.tex
 Underfull \hbox (badness 10000) in paragraph at lines 3--12
 
- []
+! LaTeX Error: There's no line here to end.
 
 LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <10> on input line 12.
@@ -984,6 +984,15 @@ Your command was ignored.
 Type  I <command> <return>  to replace it with another command,
 or  <return>  to continue without it.
 
+See the LaTeX manual or LaTeX Companion for explanation.
+Type  H <return>  for immediate help.
+ ...                                              
+                                                  
+l.31 \newline
+             %
+Your command was ignored.
+Type  I <command> <return>  to replace it with another command,
+or  <return>  to continue without it.
 
 ! LaTeX Error: \caption outside float.
 

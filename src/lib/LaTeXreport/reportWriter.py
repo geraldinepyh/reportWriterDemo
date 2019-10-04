@@ -35,7 +35,7 @@ class Report():
             print(dirPath, 'already exists.')
         return
         
-    def initialize(self, fpath='../results'):
+    def initialize(self, fpath):
         """Initialize a report project. 
         
         Keyword Arguments:
@@ -114,13 +114,13 @@ class Report():
             print(f'{name} already exists in {inPath}. No override instruction was given.')
         return
 
-    def addTbl2Doc(self, tblpath):
+    def addTbl2Doc(self, tbl):
         """Add a table by name to the latex document, if it exists in the folder.
         
         Arguments:
             tblpath {str} -- file path where the tex file will be retrieved from
         """
-        tbl = os.path.basename(tblpath)
+        inPath = os.path.join(self.fpath, 'tables', tbl)
         outPath = os.path.join('../tables', tbl)
 
         if not os.path.exists(tblpath):
@@ -135,7 +135,7 @@ class Report():
     
     
     def saveFigure(self, name, fpath='', caption='', option='', override=False):
-    """Given an existing image file (fpath), save to Figures folder 
+        """Given an existing image file (fpath), save to Figures folder 
             as a png file with the same (name), if it doesn't yet exist. 
             Optional to (override) even if it exists.
 
@@ -143,19 +143,19 @@ class Report():
             figures' configuration dictionary. 
             The (Option) is any extra tex formatting of the image. 
     
-    Arguments:
-        name {str} -- Name of the figure that will be saved into the savePath 
-    
-    Keyword Arguments:
-        fpath {str} -- Location of the original file. Optional; if not provided, will just use files in the savePath (default: {''})
-        savePath {str} -- file path where the png will be copied to if fpath provided or override instruction given. (default: {''})
-        caption {str} -- Caption that will be added to the bottom of the figure. (default: {''})
-        option {str} -- Special tex configurations/formatting for the image. It must be a raw tex string, such as option='r'0.8\textheight'' or option='scale=0.5'. (default: {''})
-        override {bool} -- Specify whether to override a png file in savePath even if it exists. (default: {False})
+        Arguments:
+            name {str} -- Name of the figure that will be saved into the savePath 
+        
+        Keyword Arguments:
+            fpath {str} -- Location of the original file. Optional; if not provided, will just use files in the savePath (default: {''})
+            savePath {str} -- file path where the png will be copied to if fpath provided or override instruction given. (default: {''})
+            caption {str} -- Caption that will be added to the bottom of the figure. (default: {''})
+            option {str} -- Special tex configurations/formatting for the image. It must be a raw tex string, such as option='r'0.8\textheight'' or option='scale=0.5'. (default: {''})
+            override {bool} -- Specify whether to override a png file in savePath even if it exists. (default: {False})
 
-    Returns:
-        [type] -- [description]
-    """
+        Returns:
+            [type] -- [description]
+        """
         savePath = os.path.join(self.fpath, 'figures')
         outPng = os.path.join(savePath, name + '.png')
         
@@ -182,7 +182,7 @@ class Report():
         }
         return
     
-    def addFig2Doc(self, figpath):
+    def addFig2Doc(self, fig):
         """Add a figure by name to the end of the latex document, 
             if it exists in the folder, by referencing the configurations
             of the figure as described in the self.figures dictionary.
@@ -190,7 +190,7 @@ class Report():
         Arguments:
             figpath {str} -- file path of the figure to be added to the document.
         """ 
-        fig = os.path.basename(figpath)
+        inPath = os.path.join(self.fpath, 'figures', fig)
         outPath = os.path.join('../figures', fig)
         
         if not os.path.exists(figpath):
@@ -254,22 +254,24 @@ class Report():
             print('Error: invalid section level given.')
     
     def addSection(self, name, level=1, override=False):
-    """Adds sections to the document in the order that they
+        """Adds sections to the document in the order that they
         exist in the self.sections dictionary.
 
-    Arguments:
-        name {str} -- Name/Title of the section which will be printed.
-        Avoid using special characters like '_'. 
+        Arguments:
+            name {str} -- Name/Title of the section which will be printed.
+            Avoid using special characters like '_'. 
 
-    Keyword Arguments:
-        level {int} -- The level of the seciton to be created. For example, level=2 gives a subsection. (default: {1})
-        override {bool} -- Whether to override existing Figures on subsequent runs. (default: {False})
-    """
+        Keyword Arguments:
+            level {int} -- The level of the seciton to be created. For example, level=2 gives a subsection. (default: {1})
+            override {bool} -- Whether to override existing Figures on subsequent runs. (default: {False})
+        """
         sectPath = os.path.join(self.fpath, 'sections',  name.replace(' ','_')+'.tex')
         if not os.path.exists(sectPath) or override==True:
             # Create a section
             sect = self.sectionLevel(level, name)
             sect.append('Insert your text here.')
+            sect.append(NoEscape(r'\lipsum[1]'))
+            sect.append(LineBreak())
 
             # Dump the section 
             with open(sectPath, 'w') as tf:
@@ -343,7 +345,7 @@ class Report():
     ########################## MAKING THE REPORT ##########################
         
         
-    def makeReport(self, sectionOnly=False, texOnly=False):
+    def makeReport(self, sectionsOnly=False, tex_only=False):
         """Automated generation of the report. 
 
         Keyword Arguments:
@@ -397,8 +399,8 @@ class Report():
         else:
             try:
                 self.doc.generate_pdf(os.path.join(self.outputPath, self.name), 
-                                  clean_tex=False)
+                                  clean_tex=False) #,compiler='pdflatex',compiler_args='-interaction=batchmode')
             except:
-                print('Error generating PDF, please check if PDF was produced.')
+                print('error!')
 
         return 

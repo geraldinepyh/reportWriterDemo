@@ -1,7 +1,7 @@
 import pickle
 import pandas as pd
 import matplotlib.pyplot as plt
-import os
+import os, glob
 import shutil
 import jsonref
 
@@ -55,7 +55,7 @@ class Report():
         when it is to be regenerated. Clears previous entries.
         """
         self.doc=Document()
-        pkgs_to_add = [ 'booktabs','hyperref','lipsum','microtype', \
+        pkgs_to_add = [ 'booktabs','hyperref','lipsum','microtype', 'graphicx',\
                         'nicefrac','url','bookmark','tabularx', 'svg']
         pream_to_add = {
                         'title'  : f'{self.title}',
@@ -97,14 +97,16 @@ class Report():
 
             tbl_width = len(dataOut) # handle wide tables 
             with open(inPath,'w') as tf:
-                if tbl_width > 10:
+                if tbl_width >= 10:
                     tf.write(r'\setlength{\tabcolsep}{2pt}')
                     tf.write(r'\resizebox{0.95\textwidth}{!}{')
 
+                tf.write(r'\begin{center}')
                 tf.write(dataOut.to_latex(multirow=True, float_format=lambda x: '%0.2f' % x)) 
-                if caption != '': tf.write(r'\\\caption{' + caption + r'}')
+                tf.write(r'\end{center}')
+                if caption != '': tf.write(r'\\\centerline{\caption{' + caption + r'}}')
                 
-                if tbl_width > 10:
+                if tbl_width >= 10:
                     tf.write(r'}')
             print(f'Written {name}.tex to {inPath}')
 
@@ -112,20 +114,20 @@ class Report():
             print(f'{name} already exists in {inPath}. No override instruction was given.')
         return
 
-    def addTbl2Doc(self, tbl):
+    def addTbl2Doc(self, tblpath):
         """Add a table by name to the latex document, if it exists in the folder.
         
         Arguments:
             tblpath {str} -- file path where the tex file will be retrieved from
         """
-        inPath = os.path.join(self.fpath, 'tables', tbl)
+        tbl = os.path.basename(tblpath)
         outPath = os.path.join('../tables', tbl)
 
-        if not os.path.exists(inPath):
-            print(f'Error: {inPath} does not exist. Please save first and try again.')
+        if not os.path.exists(tblpath):
+            print(f'Error: {tblpath} does not exist. Please save first and try again.')
         else:
             self.doc.append(NoEscape(r'\input{' + outPath + r'}')) 
-            print(f'Added {tbl} to the tex doc obj.')
+            print(f'Added {tblpath} to the tex doc obj.')
         return
     
     
@@ -156,7 +158,6 @@ class Report():
         """
         savePath = os.path.join(self.fpath, 'figures')
         outPng = os.path.join(savePath, name + '.png')
-        outTex = os.path.join(savePath, name + '.tex')
         
         if not os.path.exists(outPng) and fpath != '':
             print(f'Copying {name}.png to {savePath}.')
@@ -169,19 +170,19 @@ class Report():
         elif fpath == '' and not os.path.exists(outPng):
             print('No input path provided. Image not found.')
 
-        elif os.path.exists(outTex) and os.path.exists(outPng):
+        elif os.path.exists(outPng):
             print(f'{name} already exists in {savePath}. No override instruction was given.')
         
         # Add to dictionary. 
         self.figures[name+'.png'] = {
-            'name' : name,
-            'fpath' : fpath, 
-            'caption' : caption,
-            'option' : option
+            'name': name,
+            'fpath': fpath,
+            'caption': caption,
+            'option': option
         }
         return
     
-    def addFig2Doc(self, fig):
+    def addFig2Doc(self, figpath):
         """Add a figure by name to the end of the latex document, 
             if it exists in the folder, by referencing the configurations
             of the figure as described in the self.figures dictionary.
@@ -189,14 +190,15 @@ class Report():
         Arguments:
             figpath {str} -- file path of the figure to be added to the document.
         """ 
+        fig = os.path.basename(figpath)
         inPath = os.path.join(self.fpath, 'figures', fig)
         outPath = os.path.join('../figures', fig)
         
-        if not os.path.exists(inPath):
+        if not os.path.exists(figpath):
             print('Error: File does not exist!')
         else:
             # self.doc.append(NoEscape(r'\input{' + outPath + r'}')) 
-            with self.doc.create(Figure(position='!ht')) as fig_:
+            with self.doc.create(Figure(position='ht')) as fig_:
                 ## To adjust image size given specified options: 
                 if fig in self.figures: # added via saveFigure():
                     if 'option' in self.figures[fig]:
@@ -213,8 +215,7 @@ class Report():
                     fig_.add_image(outPath)
             print(f'Added {fig} to the tex doc obj')
         return
-
-    
+  
     ######################## ADDING STUFF ############################
     
     def addNewLine2Doc(self):
@@ -252,7 +253,6 @@ class Report():
             return Subsubsection(title)
         else:
             print('Error: invalid section level given.')
-        return
     
     def addSection(self, name, level=1, override=False):
         """Adds sections to the document in the order that they
@@ -283,65 +283,62 @@ class Report():
             print(f'{sectPath} already exists. Did not override.')
         
         if not name in self.sections:
+            # avoid tex errors with any _ in the section name
             self.sections[name.replace(' ', '_')] = {
                 "fpath" : sectPath,
                 "level" : level
             }
         return
     
-    def addAppendix(self):
+    def addAppendix(self, apdx):
         """Adds mapping tables as an appendix to the report.
-        For each csv file in the appendix folder, it will create either a 2/3-column
-            table specifying the mapping values. 
+        For the specified (apdx) csv file in the appendix folder, 
+            it will create a table with either 2/3-columns
+            specifying the mapping values. 
+        Note that this might not work well with extremely long mapping tables.
         """
-        appenPath = os.path.join(self.fpath, 'mappingTables')
+        mappingTable = pd.read_csv(apdx, header=None)
+        colNum = len(mappingTable.columns)
+        apdx_name = os.path.basename(apdx) # for printing
 
-        self.addText2Doc(r'\clearpage') # page break
-        for apdx in os.listdir(appenPath): 
-            if not apdx.startswith('.'):
-                mappingTable = pd.read_csv(os.path.join(appenPath, apdx), header=None)
-                colNum = len(mappingTable.columns)
+        if colNum == 2:
+            hdr_format = 'l X[l]'
+            col_names = ['Original', 'Category']
+            mappingTable.columns = col_names
+            mappingTable = mappingTable.groupby('Category')['Original'].apply(list).reset_index()
+            tbl_type = LongTabularx(hdr_format, width_argument=NoEscape(r'0.9\textwidth'))
 
-                if colNum == 2:
-                    hdr_format = 'l X[l]'
-                    col_names = ['Original', 'Category']
-                    mappingTable.columns = col_names
-                    mappingTable = mappingTable.groupby('Category')['Original'].apply(list).reset_index()
-                    tbl_type = LongTabularx(hdr_format, width_argument=NoEscape(r'0.9\textwidth'))
+        elif colNum == 3:
+            hdr_format = 'l l l'
+            col_names = ['Lower','Upper','Category']
+            tbl_type = Tabular(hdr_format)
 
-                elif colNum == 3:
-                    hdr_format = 'l l l'
-                    col_names = ['Lower','Upper','Category']
-                    tbl_type = Tabular(hdr_format)
+        self.doc.append(Subsection('{}'.format(apdx_name.replace('_', ' '))))
 
-                self.doc.append(bold(NoEscape(r'{} Mapping Table\\'.format(apdx.replace('_', ' ')))))
+        with self.doc.create(tbl_type) as appendix:
+            appendix.add_hline()
+            appendix.add_row(col_names) 
+            appendix.add_hline()
 
-                with self.doc.create(tbl_type) as appendix:
-                    appendix.add_hline()
-                    appendix.add_row(col_names) 
-                    appendix.add_hline()
+            if colNum == 2: 
+                appendix.end_table_header()
+                appendix.add_hline()
+                appendix.add_row((MultiColumn(colNum, align='r',
+                                            data='Continued on Next Page'),))
+                appendix.end_table_footer()
+                appendix.add_hline()
+                appendix.add_row((MultiColumn(colNum, align='r',
+                                data='Not Continued on Next Page'),))
+                appendix.end_table_last_footer()
 
-                    if colNum == 2: 
-                        appendix.end_table_header()
-                        appendix.add_hline()
-                        appendix.add_row((MultiColumn(colNum, align='r',
-                                                    data='Continued on Next Page'),))
-                        appendix.end_table_footer()
-                        appendix.add_hline()
-                        appendix.add_row((MultiColumn(colNum, align='r',
-                                        data='Not Continued on Next Page'),))
-                        appendix.end_table_last_footer()
+            # Iterate through each row in the csv. 
+            for i, rw in mappingTable.iterrows():
+                row = [rw[j] for j in range(colNum)]
+                appendix.add_row(row)
 
-                    # Iterate through each row in the csv. 
-                    for i, rw in mappingTable.iterrows():
-                        row = [rw[j] for j in range(colNum)]
-                        appendix.add_row(row)
+            appendix.add_hline()
 
-                    appendix.add_hline()
-
-                self.doc.append(LineBreak())
-                self.doc.append(LineBreak())
-                self.doc.append(LineBreak())
+        self.doc.append(LineBreak())
         
         return
     
@@ -349,7 +346,7 @@ class Report():
     ########################## MAKING THE REPORT ##########################
         
         
-    def makeReport(self, reportName = 'report', tex_only=False):
+    def makeReport(self, sectionOnly=False, texOnly=False):
         """Automated generation of the report. 
 
         Keyword Arguments:
@@ -371,35 +368,34 @@ class Report():
         # For section inside the folder, add sections
         sectPath = os.path.join(self.fpath, 'sections')
         # for sect in os.listdir(sectPath): 
-        for sect in self.sections:
+        for sect in self.sections: 
             sectFile = os.path.join('../sections', sect)
             self.addText2Doc(r'\input{' + sectFile + r'}')
-            self.doc.append(NewLine())
-            self.doc.append(LineBreak())
-            
-        # For figures inside the folder, add figures
-        figPath = os.path.join(self.fpath, 'figures')
-        self.doc.create(Section('Figures'))
-        for fig in os.listdir(figPath):
-            if not fig.startswith('.'):
-                self.addFig2Doc(fig)
-                self.doc.append(NewLine())
-                self.doc.append(LineBreak())
-            
-        # For tables inside the folder, add tables
-        tblPath = os.path.join(self.fpath, 'tables')
-        self.doc.create(Section('Tables'))
-        for tbl in os.listdir(tblPath):
-            if not tbl.startswith('.'):
-                self.addTbl2Doc(tbl)
-                self.doc.append(NewLine())
-                self.doc.append(LineBreak())
 
-        # For apx inside the folder, add apx
-        self.addAppendix()
+        if not sectionOnly: # figures and tables tex will be pushed to main doc    
+            # For figures inside the folder, add figures
+            figPath = os.path.join(self.fpath, 'figures')
+            self.doc.create(Section('Figures'))
+            for fig in glob.glob(figPath+'/*.png'):
+                self.addFig2Doc(fig)
+                
+            # For tables inside the folder, add tables
+            tblPath = os.path.join(self.fpath, 'tables')
+            self.doc.create(Section('Tables'))
+            for tbl in glob.glob(tblPath+'/*.tex'):
+                self.addTbl2Doc(tbl)
+
+        # For apx inside the folder, add appendix
+        appenPath = os.path.join(self.fpath, 'mappingTables')
+        apdxs = glob.glob(appenPath+'/*.csv')
+        if apdxs != []:
+            self.addText2Doc(r'\clearpage') # page break
+            self.doc.append(Section('Appendix - Mapping Tables'))
+            for apdx in apdxs:
+                self.addAppendix(apdx)
         
         ## generate tex/pdf
-        if tex_only:
+        if texOnly:
             self.doc.generate_tex(os.path.join(self.outputPath, self.name))
         else:
             try:

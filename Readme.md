@@ -4,7 +4,8 @@ This project is a demonstration of how the latex report writer library can be us
 
 ## Getting Started
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
+To start, initialize this repo with `make firstRun`.
+An example has been created under `src/modules/module1`. There are 2 functions: to create data, and to structure the data in the report.
 
 ## Prerequisites
 

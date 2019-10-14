@@ -35,12 +35,17 @@ class Report():
             print(dirPath, 'already exists.')
         return
         
-    def initialize(self, fpath):
+    def initialize(self, fpath=None):
         """Initialize a report project. 
         
         Keyword Arguments:
-            fpath {str} -- File path where the report project is to be generated. (default: {'../results'})
+            fpath {str} -- File path where the report project is to be generated. (default: {'../report'})
         """
+        if fpath == None: 
+            fpath = self.fpath
+        else:
+            self.fpath = fpath
+
         self.makeDirs(fpath)
         subs = list(self.objects) + ['output'] 
         for sub in subs:
